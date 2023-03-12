@@ -47,7 +47,7 @@ def remove_stop_words(data):
 
 
 def remove_punctuation(data):
-    punctuation = '''!()-[]{};:'"\,<>./?@#$%^&*_~'''
+    punctuation = '''!()-[]{};:'"\,<>./?@#$%^&*_—-~'''
 
     for i in range(len(punctuation)):
         data = np.char.replace(data, punctuation[i], ' ')
@@ -83,9 +83,9 @@ def convert_number(data):
 
     for token in tokens:
         if token.isdigit():
-            if int(token) < 100000000:
+            if re.match(r'^\d+(st|nd|rd|th)$', token):
                 new_token = num2words(token)
-            elif re.match(r'^\d+(st|nd|rd|th)$', token):
+            elif int(token) < 100000000:
                 new_token = num2words(token)
             else:
                 new_token = ""
