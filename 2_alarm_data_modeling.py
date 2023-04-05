@@ -33,18 +33,22 @@ def add_alarm_nums_last_24h(data):
     return data
 
 
-def save_data(output_folder, output_file, df):
-    df.to_csv(f"{output_folder}/{output_file}", index=False, sep=';')
+def save_data(output_folder, output_file, data):
+    data.to_csv(f"{output_folder}/{output_file}", index=False, sep=';')
 
+
+def drop_unnecessary_fields(data):
+    return data.drop(["start_round", "end_round"], axis=1)
 
 if __name__ == "__main__":
-    INPUT_FOLDER = "data/0_raw_alarm"
-    INPUT_DATA = "alarms.csv"
-    OUTPUT_FOLDER = "data/1_prep_alarm"
+    INPUT_FOLDER = "data/input"
+    INPUT_DATA = "alarms_origin.csv"
+    OUTPUT_FOLDER = "data/output"
     OUTPUT_DATA = "alarms.csv"
 
     alarms = read_data(INPUT_FOLDER, INPUT_DATA)
     alarms = round_times(alarms)
     alarms = count_region_nums(alarms)
     alarms = add_alarm_nums_last_24h(alarms)
+    alarms = drop_unnecessary_fields(alarms)
     save_data(OUTPUT_FOLDER, OUTPUT_DATA, alarms)
