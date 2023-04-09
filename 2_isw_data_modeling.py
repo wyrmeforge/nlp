@@ -7,9 +7,9 @@ from sklearn.feature_extraction.text import TfidfTransformer
 from utils.tf_idf import convert_doc_to_keywords
 
 
-INPUT_DATASET_FOLDER = "datasets"
-DATA_FILE = "isw_reports.csv"
-OUTPUT_FOLDER = "datasets"
+INPUT_DATASET_FOLDER = "data"
+DATA_FILE = "0_raw_isw/isw_reports.csv"
+OUTPUT_FOLDER = "data"
 OUTPUT_DATA_FILE = "isw_reports.csv"
 
 

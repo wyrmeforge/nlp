@@ -1,6 +1,12 @@
 import pandas as pd
 
 
+INPUT_FOLDER = "data/input"
+INPUT_DATA = "alarms_origin.csv"
+OUTPUT_FOLDER = "data/output"
+OUTPUT_DATA = "alarms.csv"
+
+
 def read_data(input_folder, input_data):
     data = pd.read_csv(f"{input_folder}/{input_data}", sep=';')
     return data
@@ -40,15 +46,15 @@ def save_data(output_folder, output_file, data):
 def drop_unnecessary_fields(data):
     return data.drop(["start_round", "end_round"], axis=1)
 
-if __name__ == "__main__":
-    INPUT_FOLDER = "data/input"
-    INPUT_DATA = "alarms_origin.csv"
-    OUTPUT_FOLDER = "data/output"
-    OUTPUT_DATA = "alarms.csv"
 
+def main():
     alarms = read_data(INPUT_FOLDER, INPUT_DATA)
     alarms = round_times(alarms)
     alarms = count_region_nums(alarms)
     alarms = add_alarm_nums_last_24h(alarms)
     alarms = drop_unnecessary_fields(alarms)
     save_data(OUTPUT_FOLDER, OUTPUT_DATA, alarms)
+
+
+if __name__ == "__main__":
+    main()

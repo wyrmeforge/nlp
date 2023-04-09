@@ -47,3 +47,7 @@ ipython_config.py
 
 # ISW reports
 /data/0_raw_isw/*
+/data/dataset/x_test.csv
+/data/dataset/x_train.csv
+/data/dataset/y_test.csv
+/data/dataset/y_train.csv
