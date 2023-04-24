@@ -1,7 +1,6 @@
 import glob
 import re
 import string
-import os
 
 import numpy as np
 import pandas as pd
@@ -13,9 +12,9 @@ from num2words import num2words
 
 
 INPUT_DATA_FOLDER = "data"
-OUTPUT_FOLDER = "data/0_raw_isw"
+OUTPUT_FOLDER = "datasets"
 OUTPUT_DATA_FILE = "isw_reports.csv"
-files_by_days = glob.glob(f"{INPUT_DATA_FOLDER}/0_raw_isw/*.txt")
+files_by_days = glob.glob(f"{INPUT_DATA_FOLDER}/*.txt")
 
 
 def remove_one_letter_word(data):
@@ -145,6 +144,7 @@ def main():
                 "date": date,
                 "text": main_text,
             }
+
             all_data.append(dist)
     df = pd.DataFrame.from_dict(all_data)
     df = df.sort_values(by=['date'])
