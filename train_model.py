@@ -13,16 +13,19 @@ MODEL_FOLDER = "model"
 
 FEATURES_TO_INCLUDE = [
     'city_resolvedAddress',
-    'day_temp',
-    'day_humidity',
+    'event_start',
+    'event_end',
     'hour_windspeed',
     'hour_conditions',
-    'event_start_hour',
-    'hour_precipprob',
+    'day_humidity',
     'hour_snow',
-    'event_end',
-    'hour_solarenergy',
+    'hour_pressure',
     'hour_visibility',
+    'hour_precip',
+    'hour_windgust',
+    'hour_cloudcover',
+    'hour_severerisk',
+    'day_temp',
 ]
 
 
