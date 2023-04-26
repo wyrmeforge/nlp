@@ -30,5 +30,9 @@ def split(path):
     y_test.to_csv(f'{RESULT_DIR}/y_test.csv', sep=';')
 
 
-if __name__ == "__main__":
+def main():
     split(FILE_PATH)
+
+
+if __name__ == '__main__':
+    main()

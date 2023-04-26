@@ -11,8 +11,8 @@ from nltk.tokenize import word_tokenize
 from num2words import num2words
 
 
-INPUT_DATA_FOLDER = "data"
-OUTPUT_FOLDER = "datasets"
+INPUT_DATA_FOLDER = "data/0_raw_isw"
+OUTPUT_FOLDER = "datasets/1_raw_isw"
 OUTPUT_DATA_FILE = "isw_reports.csv"
 files_by_days = glob.glob(f"{INPUT_DATA_FOLDER}/*.txt")
 
