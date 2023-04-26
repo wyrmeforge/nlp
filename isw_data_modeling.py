@@ -4,13 +4,11 @@ import pandas as pd
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.feature_extraction.text import TfidfTransformer
 
-from utils.tf_idf import convert_doc_to_keywords
 
-
-INPUT_DATASET_FOLDER = "data"
-DATA_FILE = "0_raw_isw/isw_reports.csv"
-OUTPUT_FOLDER = "data"
-OUTPUT_DATA_FILE = "isw_reports.csv"
+INPUT_DATASET_FOLDER = "datasets"
+DATA_FILE = "1_raw_isw/isw_reports.csv"
+OUTPUT_FOLDER = "datasets"
+OUTPUT_DATA_FILE = "1_raw_isw/isw_reports_v2.csv"
 
 
 def load_data():
@@ -34,6 +32,14 @@ def load_vectorizers():
 def sort_coo(coo_matrix):
     tuples = zip(coo_matrix.col, coo_matrix.data)
     return sorted(tuples, key=lambda x: (x[1], x[0]), reverse=True)
+
+
+def convert_doc_to_keywords(doc, cv, tfidf):
+    feature_names = cv.get_feature_names_out()
+    tf_idf_vector = tfidf.transform(cv.transform([doc]))
+    sorted_items = sort_coo(tf_idf_vector.tocoo())
+    keywords = get_top_n_features(feature_names, sorted_items)
+    return keywords
 
 
 def get_top_n_features(feature_names, sorted_items, topn=10):
