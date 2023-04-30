@@ -1,6 +1,7 @@
 import glob
 import re
 import string
+from pathlib import Path
 
 import numpy as np
 import pandas as pd
@@ -12,7 +13,7 @@ from num2words import num2words
 
 
 INPUT_DATA_FOLDER = "data/0_raw_isw"
-OUTPUT_FOLDER = "datasets/1_raw_isw"
+OUTPUT_FOLDER = "data/1_raw_isw"
 OUTPUT_DATA_FILE = "isw_reports.csv"
 files_by_days = glob.glob(f"{INPUT_DATA_FOLDER}/*.txt")
 
@@ -128,6 +129,24 @@ def preprocess(data, alg="lemm"):
     data = remove_stop_words(data)
 
     return data
+
+
+def prepare_report(path_to_report: Path):
+    date = path_to_report.stem
+
+    with open(path_to_report, "r", encoding='utf-8') as cfile:
+        main_text = cfile.read()
+        dist = {
+            "date": date,
+            "text": main_text,
+        }
+    df = pd.DataFrame.from_dict(dist)
+    df = df.sort_values(by=['date'])
+    df['lemming'] = df['text'].apply(lambda x: preprocess(x, "lemm"))
+    df['stemming'] = df['text'].apply(lambda x: preprocess(x, "stem"))
+    csv_path = f"{OUTPUT_FOLDER}/{date}.csv"
+    df.to_csv(csv_path, sep=";", index=False)
+    return csv_path
 
 
 def main():

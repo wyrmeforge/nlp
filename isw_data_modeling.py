@@ -1,4 +1,5 @@
 import pickle
+from pathlib import Path
 
 import pandas as pd
 from sklearn.feature_extraction.text import CountVectorizer
@@ -7,8 +8,8 @@ from sklearn.feature_extraction.text import TfidfTransformer
 
 INPUT_DATASET_FOLDER = "datasets"
 DATA_FILE = "1_raw_isw/isw_reports.csv"
-OUTPUT_FOLDER = "datasets"
-OUTPUT_DATA_FILE = "1_raw_isw/isw_reports_v2.csv"
+OUTPUT_FOLDER = "data/1_raw_isw"
+OUTPUT_DATA_FILE = "isw_reports_v2.csv"
 
 
 def load_data():
@@ -55,8 +56,7 @@ def get_top_n_features(feature_names, sorted_items, topn=10):
     return results
 
 
-def process_data():
-    df = load_data()
+def process_data(df):
     docs = df['lemming'].tolist()
     cv = CountVectorizer(max_df=0.98, min_df=2)
     word_counter_vector = cv.fit_transform(docs)
@@ -72,8 +72,17 @@ def save_data(df):
     df.to_csv(f"{OUTPUT_FOLDER}/{OUTPUT_DATA_FILE}", sep=";", index=False)
 
 
+def process_file_data(path_to_csv: Path):
+    df = pd.read_csv(path_to_csv, sep=";")
+    df = process_data(df)
+    csv_path = f"{OUTPUT_FOLDER}/isw_report_model_{path_to_csv.stem}.csv"
+    df.to_csv(csv_path, sep=";", index=False)
+    return csv_path
+
+
 def main():
-    df = process_data()
+    df = load_data()
+    df = process_data(df)
     save_data(df)
 
 

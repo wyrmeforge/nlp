@@ -13,6 +13,10 @@ from bs4 import BeautifulSoup, Tag
 from fake_useragent import UserAgent
 
 
+if platform.system() == 'Windows':
+    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+
+
 month_date_format = '%B-%#d'
 month_article_date_format = '%B %#d'
 simple_date_format = '%Y-%m-%d'
@@ -110,11 +114,13 @@ async def parse_text(html: str, date: datetime) -> str:
     return '\n'.join(paragraphs)
 
 
-async def save_to_file(text: str, date: str):
+async def save_to_file(text: str, date: str) -> Path:
     data_dir = Path(__file__).parents[1].joinpath('data', '0_raw_isw')
-    async with aiofiles.open(data_dir.joinpath(f"{date}.txt"), 'w', encoding='utf-8') as f:
+    filepath = data_dir.joinpath(f"{date}.txt")
+    async with aiofiles.open(filepath, 'w', encoding='utf-8') as f:
         print(f.name)
         await f.write(text)
+    return filepath
 
 
 async def fetch_data(url: str, date: datetime, session: aiohttp.ClientSession):
@@ -151,13 +157,18 @@ async def collect_data():
         await asyncio.gather(*tasks)
 
 
+async def get_report_for_date(date: datetime):
+    url = compose_link_for_date(date)
+    async with aiohttp.ClientSession() as session:
+        task = asyncio.create_task(fetch_data(url, date, session))
+        return await asyncio.gather(task)
+
+
 async def main():
     await collect_data()
 
 
 if __name__ == '__main__':
-    if platform.system() == 'Windows':
-        asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
     t0 = time()
     asyncio.run(main())
     print(f"Execution time: {time() - t0} ms")
