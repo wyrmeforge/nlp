@@ -1,9 +1,11 @@
+from os import getenv
+
 import requests
 import csv
 from datetime import datetime, timedelta
 import pandas as pd
 
-API_KEY = ''
+API_KEY = getenv('ALARMS_API_KEY')
 
 # we don`t have 16 because it Luhansk
 region_id_alarms = {'Khmelnytskyi': '3',
@@ -72,6 +74,9 @@ def build_correct_alarm(alarm, id):
     start = alarm['startDate']  # | start
     end = alarm['endDate']  # | end
     clean_end = alarm['endDate']  # | clean_end
+    if alarm['isContinue']:
+        end = alarm['startDate']  # | end
+        clean_end = alarm['startDate']  # | clean_end
     intersection_alarm_id = 'NULL'  # | intersection_alarm_id
     return [id, region_id, region_title, region_city, 1, start, end, clean_end, intersection_alarm_id]
 
@@ -97,8 +102,9 @@ def get_alarms_for_last_12_H():
     header = ["id", "region_id", "region_title", "region_city", "all_region", "start", "end", "clean_end",
               "intersection_alarm_id"]
 
-    with open('data/output/alarms.csv', mode='w', newline='') as file:
-        writer = csv.writer(file, delimiter=',')
+    filename = 'alarm_' + datetime.now().strftime("%Y-%m-%d") + '.csv'
+    with open(f'data/output/{filename}', mode='w', newline='') as file:
+        writer = csv.writer(file, delimiter=';')
         writer.writerow(header)
         id = 1
         for alarm in alarms_12H:

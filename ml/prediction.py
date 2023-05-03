@@ -58,8 +58,10 @@ def get_prediction_data_for_12_hours(api_key):
     # TODO alarms - alarms data for the PREVIOUS 12 hours
     # isw - the LAST isw report (yesterday, or the day before yesterday)
     get_alarms_for_last_12_H()
+    # this file generated like ['alarms_yyyy-mm-dd.csv']
+    alarms_data_file = 'alarm_' + datetime.datetime.now().strftime("%Y-%m-%d") + '.csv'
 
-    res = merge_weather_alarm_keywords_for_files(weather_csv_path, ALARMS_DATA_FILE, isw_data_csv_path,
+    res = merge_weather_alarm_keywords_for_files(weather_csv_path, alarms_data_file, isw_data_csv_path,
                                                  yesterday + datetime.timedelta(days=1))  # merge
 
     return res
