@@ -5,6 +5,7 @@ import pickle
 
 import pandas as pd
 
+from alarms_last_data import get_alarms_for_last_12_H
 from data_collectors.isw_data_collector import get_report_for_date
 from data_collectors.weather_data_collector import get_weather_forecast, save_all_weather_data_to_csv
 from isw_data_modeling import process_file_data
@@ -56,6 +57,8 @@ def get_prediction_data_for_12_hours(api_key):
     # weather - forecast for the next 12 hours
     # TODO alarms - alarms data for the PREVIOUS 12 hours
     # isw - the LAST isw report (yesterday, or the day before yesterday)
+    get_alarms_for_last_12_H()
+
     res = merge_weather_alarm_keywords_for_files(weather_csv_path, ALARMS_DATA_FILE, isw_data_csv_path,
                                                  yesterday + datetime.timedelta(days=1))  # merge
 

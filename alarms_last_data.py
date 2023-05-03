@@ -50,10 +50,7 @@ def last_alarms(region_id):
 def is_newer_than_12_hours(startDate):
     now = datetime.now()
     now = now.replace(second=0, microsecond=0, minute=0, hour=now.hour) + timedelta(hours=1)
-    print(now)
-    print(startDate)
     startDate = datetime.strptime(startDate, '%Y-%m-%dT%H:%M:%S') + timedelta(hours=12)
-    print(startDate)
     return now <= startDate
 
 
@@ -100,7 +97,7 @@ def get_alarms_for_last_12_H():
     header = ["id", "region_id", "region_title", "region_city", "all_region", "start", "end", "clean_end",
               "intersection_alarm_id"]
 
-    with open(f'alarms_last_data.csv', mode='w', newline='') as file:
+    with open('data/output/alarms.csv', mode='w', newline='') as file:
         writer = csv.writer(file, delimiter=',')
         writer.writerow(header)
         id = 1
@@ -109,3 +106,5 @@ def get_alarms_for_last_12_H():
             id += 1
 
 
+# if __name__ == "__main__":
+#     get_alarms_for_last_12_H()
