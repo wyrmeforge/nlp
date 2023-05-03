@@ -6,11 +6,14 @@ import sys
 import urllib.error
 import urllib.request
 from os import getenv
+from pathlib import Path
 
 import requests
+from pandas import DataFrame
 
 from utils.utils import get_regions
 
+RAW_OUTPUT_DATA_FOLDER = "data/0_raw_weather"
 OUTPUT_DATA_FOLDER = "data/output"
 WEATHER_DATA_PREDICTION_FILE = "isw_reports_prepared.csv"
 
@@ -84,7 +87,8 @@ def get_weather_forecast(api_key, city='Kyiv'):
                datetime.datetime.fromtimestamp(hour['datetimeEpoch']).date()
         ][0]
 
-    url = f'{BASE_URL}/{city}/{(datetime.datetime.now() + datetime.timedelta(hours=3)).strftime("%Y-%m-%dT%H:%M:%S")}/{(datetime.datetime.now() + datetime.timedelta(hours=15)).strftime("%Y-%m-%dT%H:%M:%S")}'
+    url = f'{BASE_URL}/{city}/{(datetime.datetime.now() + datetime.timedelta(hours=1)).strftime("%Y-%m-%dT%H:%M:%S")}/{(datetime.datetime.now() + datetime.timedelta(hours=13)).strftime("%Y-%m-%dT%H:%M:%S")}'
+    print(url)
     params = {
         'unitGroup': 'metric',
         'key': f'{api_key}',
@@ -105,8 +109,8 @@ def get_weather_forecast(api_key, city='Kyiv'):
         hourly_forecast = [
             {
                 'city_resolvedAddress': response['resolvedAddress'],
-                'day_datetime': hour['datetime'],
-                'day_datetimeEpoch': hour['datetimeEpoch'],
+                'day_datetime': choose_day(hour)['datetime'],
+                'day_datetimeEpoch': choose_day(hour)['datetimeEpoch'],
                 'day_tempmax': choose_day(hour)['tempmax'],
                 'day_tempmin': choose_day(hour)['tempmin'],
                 'day_temp': choose_day(hour)['temp'],
@@ -149,11 +153,40 @@ def get_weather_forecast(api_key, city='Kyiv'):
         return ('Error:', response.status_code, response.text)
 
 
+def save_weather_to_csv(hourly_forecast: list[dict]) -> Path:
+    region = hourly_forecast[0]['city_resolvedAddress'].split(',')[0]
+    first_day = hourly_forecast[0]['day_datetime']
+    first_hour = hourly_forecast[0]['hour_datetime'][0:2]
+    last_daytime = hourly_forecast[-1]['day_datetime']
+    last_hour = hourly_forecast[-1]['hour_datetime'][0:2]
+
+    filename = f"weather__{region}__{first_day}_{first_hour}H__{last_daytime}_{last_hour}H.csv"
+    weather_file_csv = Path(__file__).parents[1].joinpath(OUTPUT_DATA_FOLDER, filename)
+    with open(weather_file_csv, 'w', encoding='utf-8', newline='') as f:
+        csv_writer = csv.writer(f)
+        csv_writer.writerow(hourly_forecast[0].keys())
+        for row in hourly_forecast:
+            csv_writer.writerow(row.values())
+    return weather_file_csv
+
+
+def save_all_weather_data_to_csv(all_weather: DataFrame):
+    first_day = all_weather['day_datetime'].values[0]
+    first_hour = all_weather['hour_datetime'].values[0][0:2]
+    last_daytime = all_weather['day_datetime'].values[0]
+    last_hour = all_weather['hour_datetime'].values[0][0:2]
+    filename = f"all_weather__{first_day}_{first_hour}H__{last_daytime}_{last_hour}H.csv"
+    weather_file_csv = Path(__file__).parents[1].joinpath(OUTPUT_DATA_FOLDER, filename)
+    all_weather.to_csv(weather_file_csv)
+    return weather_file_csv
+
+
 def main():
     # get_weather()
     weather = get_weather_forecast(getenv('WEATHER_API_KEY'))
-    with open('result_weather.json', 'w', encoding='utf-8') as f:
+    with open(f"{RAW_OUTPUT_DATA_FOLDER}/weather_{weather[0]['day_datetime']}.json", 'w', encoding='utf-8') as f:
         json.dump(weather, f)
+    save_weather_to_csv(weather)
 
 
 if __name__ == '__main__':

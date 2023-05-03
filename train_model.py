@@ -9,10 +9,11 @@ import pickle
 from sklearn.metrics import confusion_matrix
 
 INPUT_DATA_FOLDER = "data/dataset"
-MODEL_FOLDER = "model"
+MODEL_FOLDER = "data/model"
 
 FEATURES_TO_INCLUDE = [
-    'city_resolvedAddress',
+    'region_id',
+    # 'city_resolvedAddress',
     'event_start',
     'event_end',
     'hour_windspeed',
@@ -25,7 +26,9 @@ FEATURES_TO_INCLUDE = [
     'hour_windgust',
     'hour_cloudcover',
     'hour_severerisk',
+    'event_start_hour',
     'day_temp',
+    # 'city'
 ]
 
 
@@ -164,12 +167,12 @@ def run_decision_tree_classifier_model(X_train, X_test, y_train, y_test):
 
 def train_models():
     models = {
-        'lg_model': run_logistic_regression,
-        'sgd_model': run_sgd_model,
-        'random_forest_model': run_random_forest_model,
-        'nv_model': run_naive_bayes_model,
-        'dtc_model': run_decision_tree_classifier_model,
-        'svc_model': run_svc_model
+        # 'lg_model': run_logistic_regression,
+        # 'sgd_model': run_sgd_model,
+        # 'random_forest_model': run_random_forest_model,
+        # 'nv_model': run_naive_bayes_model,
+        'dtc_model': run_decision_tree_classifier_model
+        # 'svc_model': run_svc_model
     }
 
     X_train = pd.read_csv(f'{INPUT_DATA_FOLDER}/x_train.csv', sep=';')

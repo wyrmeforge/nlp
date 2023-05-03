@@ -140,11 +140,11 @@ def prepare_report(path_to_report: Path):
             "date": date,
             "text": main_text,
         }
-    df = pd.DataFrame.from_dict(dist)
+    df = pd.DataFrame.from_dict([dist])
     df = df.sort_values(by=['date'])
     df['lemming'] = df['text'].apply(lambda x: preprocess(x, "lemm"))
     df['stemming'] = df['text'].apply(lambda x: preprocess(x, "stem"))
-    csv_path = f"{OUTPUT_FOLDER}/{date}.csv"
+    csv_path = Path(__file__).parents[0].joinpath(OUTPUT_FOLDER, f"{date}.csv")
     df.to_csv(csv_path, sep=";", index=False)
     return csv_path
 

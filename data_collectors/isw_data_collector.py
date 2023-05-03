@@ -131,7 +131,7 @@ async def fetch_data(url: str, date: datetime, session: aiohttp.ClientSession):
         'user-agent': ua.random
     }
     string_date = date.strftime(year_date_format).lower()
-    print(f"Processing {string_date}")
+    print(f"Processing {string_date} ({url})")
     response = await session.get(url=url, params='', headers=headers)
 
     if response.status != 200:
@@ -139,10 +139,10 @@ async def fetch_data(url: str, date: datetime, session: aiohttp.ClientSession):
             print(f"No report for {string_date}")
         elif response.status == 403:
             print(f"Access denied for {string_date}")
-        return
+        return None
 
     text = await parse_text(await response.text(), date)
-    await save_to_file(text, date.strftime(simple_date_format))
+    return await save_to_file(text, date.strftime(simple_date_format))
 
 
 async def collect_data():
@@ -160,8 +160,13 @@ async def collect_data():
 async def get_report_for_date(date: datetime):
     url = compose_link_for_date(date)
     async with aiohttp.ClientSession() as session:
-        task = asyncio.create_task(fetch_data(url, date, session))
-        return await asyncio.gather(task)
+        res = None
+        while not res:
+            res = await fetch_data(url, date, session)
+            date -= timedelta(days=1)
+            url = compose_link_for_date(date)
+        return res
+
 
 
 async def main():

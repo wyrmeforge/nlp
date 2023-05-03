@@ -58,7 +58,7 @@ def get_top_n_features(feature_names, sorted_items, topn=10):
 
 def process_data(df):
     docs = df['lemming'].tolist()
-    cv = CountVectorizer(max_df=0.98, min_df=2)
+    cv = CountVectorizer() # max_df=0.98, min_df=2
     word_counter_vector = cv.fit_transform(docs)
     tfidf_transformer = TfidfTransformer(smooth_idf=True, use_idf=True)
     tfidf_transformer.fit(word_counter_vector)
@@ -75,7 +75,8 @@ def save_data(df):
 def process_file_data(path_to_csv: Path):
     df = pd.read_csv(path_to_csv, sep=";")
     df = process_data(df)
-    csv_path = f"{OUTPUT_FOLDER}/isw_report_model_{path_to_csv.stem}.csv"
+    # csv_path = f"{OUTPUT_FOLDER}/isw_report_model_{path_to_csv.stem}.csv"
+    csv_path = Path(__file__).parents[0].joinpath(OUTPUT_FOLDER, f"isw_report_model_{path_to_csv.stem}.csv")
     df.to_csv(csv_path, sep=";", index=False)
     return csv_path
 
