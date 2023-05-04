@@ -13,6 +13,10 @@ from bs4 import BeautifulSoup, Tag
 from fake_useragent import UserAgent
 
 
+if platform.system() == 'Windows':
+    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+
+
 month_date_format = '%B-%#d'
 month_article_date_format = '%B %#d'
 simple_date_format = '%Y-%m-%d'
@@ -110,11 +114,13 @@ async def parse_text(html: str, date: datetime) -> str:
     return '\n'.join(paragraphs)
 
 
-async def save_to_file(text: str, date: str):
+async def save_to_file(text: str, date: str) -> Path:
     data_dir = Path(__file__).parents[1].joinpath('data', '0_raw_isw')
-    async with aiofiles.open(data_dir.joinpath(f"{date}.txt"), 'w', encoding='utf-8') as f:
+    filepath = data_dir.joinpath(f"{date}.txt")
+    async with aiofiles.open(filepath, 'w', encoding='utf-8') as f:
         print(f.name)
         await f.write(text)
+    return filepath
 
 
 async def fetch_data(url: str, date: datetime, session: aiohttp.ClientSession):
@@ -125,7 +131,7 @@ async def fetch_data(url: str, date: datetime, session: aiohttp.ClientSession):
         'user-agent': ua.random
     }
     string_date = date.strftime(year_date_format).lower()
-    print(f"Processing {string_date}")
+    print(f"Processing {string_date} ({url})")
     response = await session.get(url=url, params='', headers=headers)
 
     if response.status != 200:
@@ -133,10 +139,10 @@ async def fetch_data(url: str, date: datetime, session: aiohttp.ClientSession):
             print(f"No report for {string_date}")
         elif response.status == 403:
             print(f"Access denied for {string_date}")
-        return
+        return None
 
     text = await parse_text(await response.text(), date)
-    await save_to_file(text, date.strftime(simple_date_format))
+    return await save_to_file(text, date.strftime(simple_date_format))
 
 
 async def collect_data():
@@ -151,13 +157,23 @@ async def collect_data():
         await asyncio.gather(*tasks)
 
 
+async def get_report_for_date(date: datetime):
+    url = compose_link_for_date(date)
+    async with aiohttp.ClientSession() as session:
+        res = None
+        while not res:
+            res = await fetch_data(url, date, session)
+            date -= timedelta(days=1)
+            url = compose_link_for_date(date)
+        return res
+
+
+
 async def main():
     await collect_data()
 
 
 if __name__ == '__main__':
-    if platform.system() == 'Windows':
-        asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
     t0 = time()
     asyncio.run(main())
     print(f"Execution time: {time() - t0} ms")
