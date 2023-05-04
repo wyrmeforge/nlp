@@ -25,14 +25,96 @@ Prediction alarms system is an application for for predicting the probability of
 ├── README.md                  # Project README file
 ```
 
-### Instructions
+## Endpoints
+### POST
+`update prediction`  [/content/api/v1/integration/forecast/update](#post-update) <br/>
+`do prediction`  [/content/api/v1/integration/forecast/alarms](#post-alarms) <br/>
 
-Follow these instructions:
+### [POST] /content/api/v1/integration/forecast/update
 
-1. Type `mkdir data` in your terminal to create a new directory named "data".
-2. Type `python parser.py ; nlp.py ; tfidf.py` in your terminal to run the three Python scripts in sequence.
+The query updates predictions for next 12 hours.
 
-### Installation
+**Response**
+```
+{
+    "success": OK
+}
+```
+
+if we do request less than hour ago
+**Response**
+```
+{
+    "success": UP TO DATE
+}
+```
+
+**BODY Parameters**
+
+|          Name | Required |  Type   | Description                                                                                                                                                         |
+| -------------:|:--------:|:-------:| --------------------------------------------------------------------------------------------------------------------------|
+|     `token` | required | string  | set token from the environments variable API_KEY                                                                   |
+
+___
+
+### [POST] /content/api/v1/integration/forecast/alarms
+
+The query do predictions for regions for next 12 hours.
+
+**Response**
+```
+{
+    "last_model_train_time": "2023-02-01T13:15:30Z",
+    "last_prediciotn_time": "2023-04-01T13:15:30Z",
+    "regions_forecast": {
+        "Kyiv": {
+            "2023-05-05 00:00:00": "True",
+            "2023-05-05 01:00:00": "False",
+            "2023-05-05 02:00:00": "False",
+            "2023-05-05 03:00:00": "False",
+            "2023-05-05 04:00:00": "False",
+            "2023-05-05 05:00:00": "False",
+            "2023-05-05 06:00:00": "False",
+            "2023-05-05 07:00:00": "False",
+            "2023-05-05 08:00:00": "False",
+            "2023-05-05 09:00:00": "False",
+            "2023-05-05 10:00:00": "False"
+        }
+    }
+}
+```
+
+If not found region
+
+**Response**
+```
+{
+    "last_model_train_time": "2023-02-01T13:15:30Z",
+    "last_prediciotn_time": "2023-04-01T13:15:30Z",
+    "regions_forecast": {}
+}
+```
+
+If any implemented error
+
+**Response**
+```
+{
+    "code": 400,
+    "Error": "You must update the prediction first. /content/api/v1/integration/forecast/update"
+} 
+```
+
+**BODY Parameters**
+
+|          Name | Required |  Type   | Description                                                                                                                                                         |
+| -------------:|:--------:|:-------:| --------------------------------------------------------------------------------------------------------------------------|
+|     `token` | required | string  | Token from the environments variable API_KEY                                                                   |
+|     `regions` | required | string array  | Name of the alarm prediction regions                                                                  |
+
+___
+
+## Installation
 ```
 pip install -r /path/to/requirements.txt
 ```
