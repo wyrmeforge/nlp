@@ -26,9 +26,23 @@ Prediction alarms system is an application for for predicting the probability of
 ```
 
 ## Endpoints
+### GET
+`main`  [/](#get-main) <br/>
+
 ### POST
 `update prediction`  [/content/api/v1/integration/forecast/update](#post-update) <br/>
 `do prediction`  [/content/api/v1/integration/forecast/alarms](#post-alarms) <br/>
+
+### [GET] /
+
+The query shows main page.
+
+**Response**
+```
+<p>
+	<h2>Alarms forecasting app</h2>
+</p>
+```
 
 ### [POST] /content/api/v1/integration/forecast/update
 
@@ -41,7 +55,7 @@ The query updates predictions for next 12 hours.
 }
 ```
 
-if we do request less than hour ago
+If we do request less than hour ago
 **Response**
 ```
 {
@@ -59,7 +73,7 @@ ___
 
 ### [POST] /content/api/v1/integration/forecast/alarms
 
-The query do predictions for regions for next 12 hours.
+The query does predictions for regions for next 12 hours.
 
 **Response**
 ```
